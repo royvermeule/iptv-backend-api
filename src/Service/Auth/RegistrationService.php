@@ -19,7 +19,7 @@ class RegistrationService
     {
         $existing = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
         if ($existing !== null) {
-            throw new \DomainException('An account with this email already exists.');
+            throw new \DomainException('An account with this email already exists.', 409);
         }
 
         $passwordHash = sodium_crypto_pwhash_str(

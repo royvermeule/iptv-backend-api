@@ -1,0 +1,2 @@
+CREATE DATABASE iptv_test;
+GRANT ALL PRIVILEGES ON DATABASE iptv_test TO iptv_user;
