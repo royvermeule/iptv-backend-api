@@ -3,6 +3,7 @@
     "type": "project",
     "require": {
         "php": ">=8.4",
+        "spiral/roadrunner-cli": "^2.0",
         "spiral/roadrunner-http": "^3.5",
         "nyholm/psr7": "^1.8",
         "symfony/routing": "^7.2",
@@ -20,7 +21,8 @@
         }
     },
     "scripts": {
-        "start": "rr serve -c rr.yaml"
+        "post-install-cmd": ["@php vendor/bin/rr get-binary"],
+        "post-update-cmd": ["@php vendor/bin/rr get-binary"]
     },
     "config": {
         "sort-packages": true
