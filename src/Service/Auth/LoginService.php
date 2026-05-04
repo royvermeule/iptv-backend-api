@@ -35,6 +35,7 @@ class LoginService
         $accessToken = JWT::encode($payload, $_ENV['JWT_SECRET'], 'HS256');
         $refreshToken = bin2hex(random_bytes(32));
         $this->redis->setex('refresh:' . $existing->getId(), 604800, $refreshToken);
+        $this->redis->setex('refresh_lookup:' . $refreshToken, 604800, $existing->getId());
 
         return [
             'access_token'  => $accessToken,

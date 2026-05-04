@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controller\Auth\LoginController;
+use App\Controller\Auth\RefreshController;
 use App\Controller\Auth\RegisterController;
 use App\Controller\Auth\VerifyEmailController;
 use Symfony\Component\Routing\Route;
@@ -49,6 +50,14 @@ class Router
                 path: '/api/auth/verify-email',
                 defaults: ['_controller' => VerifyEmailController::class],
                 methods: ['GET']
+            )
+        );
+        $this->routes->add(
+            name: 'auth_refresh',
+            route: new Route(
+                path: '/api/auth/refresh',
+                defaults: ['_controller' => RefreshController::class],
+                methods: ['POST']
             )
         );
     }
