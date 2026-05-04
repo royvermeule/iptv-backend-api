@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App;
 
 use App\Config\DoctrineFactory;
-use App\Controller\Auth\LoginController;
-use App\Controller\Auth\RegisterController;
 use Doctrine\ORM\EntityManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Predis\Client;
@@ -16,7 +14,6 @@ use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class Kernel
@@ -35,7 +32,7 @@ class Kernel
             'port'   => (int) ($_ENV['REDIS_PORT'] ?? 6379),
         ]);
         $this->factory = new Psr17Factory();
-        $this->routes = $this->buildRoutes();
+        $this->routes = Router::routes();
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -71,25 +68,6 @@ class Kernel
         $controller = new $controllerClass($this->em, $this->redis);
 
         return $controller->handle($request, $params);
-    }
-
-    private function buildRoutes(): RouteCollection
-    {
-        $routes = new RouteCollection();
-
-        $routes->add('auth_register', new Route(
-            '/api/auth/register',
-            ['_controller' => RegisterController::class],
-            methods: ['POST'],
-        ));
-
-        $routes->add('auth_login', new Route(
-            '/api/auth/login',
-            ['_controller' => LoginController::class],
-            methods: ['POST'],
-        ));
-
-        return $routes;
     }
 
     // Per-request reset: keeps the DB connection warm, clears stale entity state.
