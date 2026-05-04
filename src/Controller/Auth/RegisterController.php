@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Controller\Auth;
 
+use App\Controller\BaseController;
 use App\Service\Auth\RegistrationService;
 use Doctrine\ORM\EntityManager;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Predis\Client;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class RegisterController
+class RegisterController extends BaseController
 {
     private readonly RegistrationService $service;
-    private readonly Psr17Factory $factory;
 
     public function __construct(EntityManager $em, Client $redis)
     {
+        parent::__construct();
+
         $this->service = new RegistrationService($em, $redis);
-        $this->factory = new Psr17Factory();
     }
 
     public function handle(ServerRequestInterface $request, array $params): ResponseInterface
@@ -63,14 +63,5 @@ class RegisterController
         }
 
         return $errors;
-    }
-
-    private function json(array $data, int $status = 200): ResponseInterface
-    {
-        $body = $this->factory->createStream(json_encode($data, JSON_THROW_ON_ERROR));
-
-        return $this->factory->createResponse($status)
-            ->withHeader('Content-Type', 'application/json')
-            ->withBody($body);
     }
 }

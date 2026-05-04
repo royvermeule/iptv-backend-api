@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Config\DoctrineFactory;
+use App\Controller\Auth\LoginController;
 use App\Controller\Auth\RegisterController;
 use Doctrine\ORM\EntityManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -79,6 +80,12 @@ class Kernel
         $routes->add('auth_register', new Route(
             '/api/auth/register',
             ['_controller' => RegisterController::class],
+            methods: ['POST'],
+        ));
+
+        $routes->add('auth_login', new Route(
+            '/api/auth/login',
+            ['_controller' => LoginController::class],
             methods: ['POST'],
         ));
 

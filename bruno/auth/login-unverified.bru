@@ -1,0 +1,32 @@
+meta {
+  name: Login - Unverified Email
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "test@example.com",
+    "password": "secret123"
+  }
+}
+
+tests {
+  test("returns 403", function() {
+    expect(res.status).to.equal(403);
+  });
+  
+  test("has error message", function() {
+    expect(res.body.error).to.be.a("string");
+  });
+}
