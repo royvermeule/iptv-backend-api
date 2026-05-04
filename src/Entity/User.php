@@ -45,11 +45,30 @@ class User
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    public function getId(): string { return $this->id; }
-    public function getEmail(): string { return $this->email; }
-    public function getPasswordHash(): string { return $this->passwordHash; }
-    public function isVerified(): bool { return $this->isVerified; }
-    public function getVerificationToken(): ?string { return $this->verificationToken; }
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getPasswordHash(): string
+    {
+        return $this->passwordHash;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function getVerificationToken(): ?string
+    {
+        return $this->verificationToken;
+    }
 
     public function verify(): void
     {

@@ -43,7 +43,10 @@ class Kernel
 
         try {
             return $this->dispatch($request);
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            if (($_ENV['APP_ENV'] ?? 'prod') === 'dev') {
+                return $this->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+            }
             return $this->json(['error' => 'Internal server error'], 500);
         } finally {
             $this->em->clear();
