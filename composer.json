@@ -24,7 +24,9 @@
     },
     "scripts": {
         "post-install-cmd": ["@php vendor/bin/rr get-binary"],
-        "post-update-cmd": ["@php vendor/bin/rr get-binary"]
+        "post-update-cmd": ["@php vendor/bin/rr get-binary"],
+        "start": "@php bin/serve.php",
+        "schema:create": "@php bin/schema-create.php"
     },
     "config": {
         "sort-packages": true
