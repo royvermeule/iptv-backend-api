@@ -32,7 +32,8 @@ class Kernel
             'port'   => (int) ($_ENV['REDIS_PORT'] ?? 6379),
         ]);
         $this->factory = new Psr17Factory();
-        $this->routes = Router::routes();
+        $router = new Router;
+        $this->routes = $router->routes();
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

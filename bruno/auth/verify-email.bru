@@ -1,0 +1,22 @@
+meta {
+  name: Verify Email
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/auth/verify-email?token={{verificationToken}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("has success message", function() {
+    expect(res.body.message).to.be.a("string");
+  });
+}
+​

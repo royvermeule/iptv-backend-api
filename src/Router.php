@@ -6,19 +6,50 @@ namespace App;
 
 use App\Controller\Auth\LoginController;
 use App\Controller\Auth\RegisterController;
+use App\Controller\Auth\VerifyEmailController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class Router
 {
-    public static function routes(): RouteCollection
+    private readonly RouteCollection $routes;
+
+    public function __construct()
     {
-        $routes = new RouteCollection();
+        $this->routes = new RouteCollection();
+        $this->auth();
+    }
 
-        // Auth
-        $routes->add('auth_register', new Route('/api/auth/register', ['_controller' => RegisterController::class], methods: ['POST']));
-        $routes->add('auth_login',    new Route('/api/auth/login',    ['_controller' => LoginController::class],    methods: ['POST']));
+    public function routes(): RouteCollection
+    {
+        return $this->routes;
+    }
 
-        return $routes;
+    private function auth(): void
+    {
+        $this->routes->add(
+            name: 'auth_register',
+            route: new Route(
+                path: '/api/auth/register',
+                defaults: ['_controller' => RegisterController::class],
+                methods: ['POST']
+            )
+        );
+        $this->routes->add(
+            name: 'auth_login',
+            route: new Route(
+                path: '/api/auth/login',
+                defaults: ['_controller' => LoginController::class],
+                methods: ['POST']
+            )
+        );
+        $this->routes->add(
+            name: 'auth_verify_email',
+            route: new Route(
+                path: '/api/auth/verify-email',
+                defaults: ['_controller' => VerifyEmailController::class],
+                methods: ['GET']
+            )
+        );
     }
 }
