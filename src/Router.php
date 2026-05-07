@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controller\Auth\LoginController;
+use App\Controller\Auth\LogoutController;
 use App\Controller\Auth\RefreshController;
 use App\Controller\Auth\RegisterController;
 use App\Controller\Auth\VerifyEmailController;
@@ -57,6 +58,14 @@ class Router
             route: new Route(
                 path: '/api/auth/refresh',
                 defaults: ['_controller' => RefreshController::class],
+                methods: ['POST']
+            )
+        );
+        $this->routes->add(
+            name: 'auth_logout',
+            route: new Route(
+                path: '/api/auth/logout',
+                defaults: ['_controller' => LogoutController::class],
                 methods: ['POST']
             )
         );
