@@ -38,18 +38,25 @@ class Kernel
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        if ($request->getMethod() === 'OPTIONS') {
+            return $this->withCorsHeaders($this->factory->createResponse(204));
+        }
+
         $this->resetEntityManager();
 
         try {
-            return $this->dispatch($request);
+            $response = $this->dispatch($request);
         } catch (\Throwable $e) {
             if (($_ENV['APP_ENV'] ?? 'prod') === 'dev') {
-                return $this->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+                $response = $this->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+            } else {
+                $response = $this->json(['error' => 'Internal server error'], 500);
             }
-            return $this->json(['error' => 'Internal server error'], 500);
         } finally {
             $this->em->clear();
         }
+
+        return $this->withCorsHeaders($response);
     }
 
     private function dispatch(ServerRequestInterface $request): ResponseInterface
@@ -79,6 +86,17 @@ class Kernel
         } else {
             $this->em->clear();
         }
+    }
+
+    private function withCorsHeaders(ResponseInterface $response): ResponseInterface
+    {
+        $origin = $_ENV['APP_FRONTEND_URL'] ?? '*';
+
+        return $response
+            ->withHeader('Access-Control-Allow-Origin', $origin)
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+            ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            ->withHeader('Access-Control-Allow-Credentials', 'true');
     }
 
     private function json(array $data, int $status = 200): ResponseInterface
