@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Config\DoctrineFactory;
+use App\Middleware\JwtMiddleware;
 use Doctrine\ORM\EntityManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Predis\Client;
@@ -18,6 +19,14 @@ use Symfony\Component\Routing\RouteCollection;
 
 class Kernel
 {
+    private const PUBLIC_PATHS = [
+        '/api/auth/register',
+        '/api/auth/login',
+        '/api/auth/refresh',
+        '/api/auth/logout',
+        '/api/auth/verify-email',
+    ];
+
     private EntityManager $em;
     private readonly Client $redis;
     private readonly RouteCollection $routes;
@@ -70,6 +79,14 @@ class Kernel
             return $this->json(['error' => 'Not found'], 404);
         } catch (MethodNotAllowedException) {
             return $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        if (!in_array($request->getUri()->getPath(), self::PUBLIC_PATHS, true)) {
+            try {
+                $request = (new JwtMiddleware())->process($request);
+            } catch (\DomainException $e) {
+                return $this->json(['error' => $e->getMessage()], $e->getCode());
+            }
         }
 
         $controllerClass = $params['_controller'];
