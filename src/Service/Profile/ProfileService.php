@@ -34,7 +34,7 @@ class ProfileService
             if (strtolower($name) === strtolower($profile->getName())) {
                 throw new \DomainException(
                     'A profile with this name already exists, for the current user',
-                    403
+                    409
                 );
             }
         }
