@@ -18,6 +18,11 @@ services:
     volumes:
       - redis_data:/data
 
+  redis-test:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+
   mailhog:
     image: mailhog/mailhog
     ports:
