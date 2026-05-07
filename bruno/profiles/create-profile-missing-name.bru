@@ -1,0 +1,32 @@
+meta {
+  name: Create Profile - Missing Name
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/profiles
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "country_code": "NL"
+  }
+}
+
+tests {
+  test("returns 400", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("has error message", function() {
+    expect(res.body.error).to.be.a("string");
+  });
+}

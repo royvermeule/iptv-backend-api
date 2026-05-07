@@ -9,6 +9,8 @@ use App\Controller\Auth\LogoutController;
 use App\Controller\Auth\RefreshController;
 use App\Controller\Auth\RegisterController;
 use App\Controller\Auth\VerifyEmailController;
+use App\Controller\Profile\CredentialsController;
+use App\Controller\Profile\ProfileController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -20,11 +22,40 @@ class Router
     {
         $this->routes = new RouteCollection();
         $this->auth();
+        $this->profiles();
     }
 
     public function routes(): RouteCollection
     {
         return $this->routes;
+    }
+
+    private function profiles(): void
+    {
+        $this->routes->add(
+            name: 'profiles',
+            route: new Route(
+                path: '/api/profiles',
+                defaults: ['_controller' => ProfileController::class],
+                methods: ['GET', 'POST']
+            )
+        );
+        $this->routes->add(
+            name: 'profile_delete',
+            route: new Route(
+                path: '/api/profiles/{id}',
+                defaults: ['_controller' => ProfileController::class],
+                methods: ['DELETE']
+            )
+        );
+        $this->routes->add(
+            name: 'profile_credentials',
+            route: new Route(
+                path: '/api/profiles/{id}/credentials',
+                defaults: ['_controller' => CredentialsController::class],
+                methods: ['POST']
+            )
+        );
     }
 
     private function auth(): void

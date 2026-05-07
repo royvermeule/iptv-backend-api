@@ -1,0 +1,29 @@
+meta {
+  name: List Profiles
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/profiles
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJpYXQiOjE3NzgxODg3NjAsImV4cCI6MTc3ODE4OTY2MH0.mUwETnxkCI7nB8o_4l2rahqXmJrOlZ9zQmEon-LcHaw
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("returns an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+}

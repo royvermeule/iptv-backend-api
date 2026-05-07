@@ -1,0 +1,30 @@
+meta {
+  name: Delete Profile
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/profiles/{{profileId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJpYXQiOjE3NzgxODg3NjAsImV4cCI6MTc3ODE4OTY2MH0.mUwETnxkCI7nB8o_4l2rahqXmJrOlZ9zQmEon-LcHaw
+  profileId: ba03672a-ba15-454f-832e-24918cd0b583
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("has message", function() {
+    expect(res.body.message).to.be.a("string");
+  });
+}

@@ -1,0 +1,45 @@
+meta {
+  name: Create Profile
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/profiles
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Main Profile",
+    "country_code": "NL"
+  }
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJpYXQiOjE3NzgxODg3NjAsImV4cCI6MTc3ODE4OTY2MH0.mUwETnxkCI7nB8o_4l2rahqXmJrOlZ9zQmEon-LcHaw
+}
+
+tests {
+  test("returns 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("has id", function() {
+    expect(res.body.id).to.be.a("string");
+  });
+  
+  test("has name", function() {
+    expect(res.body.name).to.equal("Main Profile");
+  });
+  
+  test("has country_code", function() {
+    expect(res.body.country_code).to.equal("NL");
+  });
+}

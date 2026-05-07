@@ -1,0 +1,29 @@
+meta {
+  name: Delete Profile - Not Found
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/profiles/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJpYXQiOjE3NzgxODg3NjAsImV4cCI6MTc3ODE4OTY2MH0.mUwETnxkCI7nB8o_4l2rahqXmJrOlZ9zQmEon-LcHaw
+}
+
+tests {
+  test("returns 404", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("has error message", function() {
+    expect(res.body.error).to.be.a("string");
+  });
+}

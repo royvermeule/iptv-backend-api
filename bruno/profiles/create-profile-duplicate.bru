@@ -1,0 +1,37 @@
+meta {
+  name: Create Profile - Duplicate Name
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/profiles
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Main Profile",
+    "country_code": "NL"
+  }
+}
+
+vars:pre-request {
+  accessToken: 
+}
+
+tests {
+  test("returns 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("has error message", function() {
+    expect(res.body.error).to.be.a("string");
+  });
+}
