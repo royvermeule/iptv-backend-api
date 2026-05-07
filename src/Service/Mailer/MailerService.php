@@ -8,17 +8,46 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class MailerService
 {
+    private TemplateService $templates;
+
+    public function __construct(?TemplateService $templates = null)
+    {
+        $this->templates = $templates ?? new TemplateService();
+    }
+
     public function sendVerificationEmail(string $toEmail, string $token): void
     {
         $frontendUrl = rtrim($_ENV['APP_FRONTEND_URL'] ?? 'http://localhost:3000', '/');
         $verifyUrl   = "{$frontendUrl}/verify-email?token={$token}";
 
+        $body = $this->templates->render('verify-email.html', [
+            'verify_url' => $verifyUrl,
+        ]);
+
+        $this->send($toEmail, 'Verify your email address', $body, strip_tags($body));
+    }
+
+    public function sendPasswordResetEmail(string $toEmail, string $token, int $expiryMinutes = 60): void
+    {
+        $frontendUrl = rtrim($_ENV['APP_FRONTEND_URL'] ?? 'http://localhost:3000', '/');
+        $resetUrl    = "{$frontendUrl}/reset-password?token={$token}";
+
+        $body = $this->templates->render('reset-password.html', [
+            'reset_url'      => $resetUrl,
+            'expiry_minutes' => $expiryMinutes,
+        ]);
+
+        $this->send($toEmail, 'Reset your password', $body, strip_tags($body));
+    }
+
+    private function send(string $toEmail, string $subject, string $htmlBody, string $plainBody): void
+    {
         $mail = $this->createMailer();
         $mail->addAddress($toEmail);
-        $mail->Subject = 'Verify your email address';
+        $mail->Subject = $subject;
         $mail->isHTML(true);
-        $mail->Body    = $this->buildHtmlBody($verifyUrl);
-        $mail->AltBody = "Please verify your email by visiting: {$verifyUrl}";
+        $mail->Body    = $htmlBody;
+        $mail->AltBody = $plainBody;
         $mail->send();
     }
 
@@ -51,16 +80,5 @@ class MailerService
         );
 
         return $mail;
-    }
-
-    private function buildHtmlBody(string $verifyUrl): string
-    {
-        $escaped = htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8');
-
-        return <<<HTML
-        <p>Thank you for registering. Please verify your email address by clicking the link below:</p>
-        <p><a href="{$escaped}">{$escaped}</a></p>
-        <p>If you did not create an account, you can safely ignore this email.</p>
-        HTML;
     }
 }

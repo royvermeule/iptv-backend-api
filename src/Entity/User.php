@@ -70,6 +70,11 @@ class User
         return $this->verificationToken;
     }
 
+    public function setPasswordHash(string $hash): void
+    {
+        $this->passwordHash = $hash;
+    }
+
     public function verify(): void
     {
         $this->isVerified = true;

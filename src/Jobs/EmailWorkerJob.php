@@ -48,6 +48,11 @@ class EmailWorkerJob implements JobInterface
                         $payload['email'],
                         $payload['token'],
                     ),
+                    'reset_password' => $this->mailer->sendPasswordResetEmail(
+                        $payload['email'],
+                        $payload['token'],
+                        (int) ($payload['expiry_minutes'] ?? 60),
+                    ),
                     default => fwrite(STDERR, "Unknown job type: {$payload['type']}\n"),
                 };
 

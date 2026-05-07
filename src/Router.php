@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controller\Auth\ForgotPasswordController;
 use App\Controller\Auth\LoginController;
 use App\Controller\Auth\LogoutController;
 use App\Controller\Auth\RefreshController;
 use App\Controller\Auth\RegisterController;
+use App\Controller\Auth\ResetPasswordController;
 use App\Controller\Auth\VerifyEmailController;
 use App\Controller\Profile\CredentialsController;
 use App\Controller\Profile\ProfileController;
@@ -97,6 +99,22 @@ class Router
             route: new Route(
                 path: '/api/auth/logout',
                 defaults: ['_controller' => LogoutController::class],
+                methods: ['POST']
+            )
+        );
+        $this->routes->add(
+            name: 'auth_forgot_password',
+            route: new Route(
+                path: '/api/auth/forgot-password',
+                defaults: ['_controller' => ForgotPasswordController::class],
+                methods: ['POST']
+            )
+        );
+        $this->routes->add(
+            name: 'auth_reset_password',
+            route: new Route(
+                path: '/api/auth/reset-password',
+                defaults: ['_controller' => ResetPasswordController::class],
                 methods: ['POST']
             )
         );

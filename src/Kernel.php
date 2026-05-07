@@ -25,6 +25,8 @@ class Kernel
         '/api/auth/refresh',
         '/api/auth/logout',
         '/api/auth/verify-email',
+        '/api/auth/forgot-password',
+        '/api/auth/reset-password',
     ];
 
     private EntityManager $em;
