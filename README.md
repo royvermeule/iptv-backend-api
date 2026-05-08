@@ -54,14 +54,48 @@ cp .env .env.example
 | `MAIL_FROM_NAME` | Sender display name |
 | `TMDB_API_KEY` | TMDB v3 API key (from themoviedb.org/settings/api) |
 
-### 3. Run migrations
+### 3. Configure the test environment
+
+`.env.test` is already committed and contains safe defaults for a local test setup (separate DB `iptv_test`, Redis on port `6380`, dummy JWT/APP keys). You should not need to touch it.
+
+For tests that call real external services, create `.env.test.local` (gitignored — never committed):
+
+```bash
+cp .env.test.local.example .env.test.local   # if the example file exists, otherwise create it manually
+```
+
+Add your real credentials to `.env.test.local`:
+
+```ini
+# Real Xtream credentials — used by SelectProfile integration tests
+XTREAM_TEST_URL=http://your-provider.example.com/
+XTREAM_TEST_USERNAME=your_username
+XTREAM_TEST_PASSWORD=your_password
+
+# TMDB v3 API key — used by Trending integration tests
+TMDB_API_KEY=your_tmdb_api_key
+```
+
+Tests that require these values call `$this->markTestSkipped()` automatically when the file is absent, so the suite still passes without it.
+
+**Test infrastructure required:**
+- A PostgreSQL database named `iptv_test` accessible with the credentials in `.env.test`
+- A Redis instance on port `6380` (separate from the dev Redis on `6379`)
+
+### 4. Run migrations
 
 ```bash
 php bin/migrations.php diff
 php bin/migrations.php migrate
 ```
 
-### 4. Start the server
+### 5 Run integration tests
+
+```bash
+composer test
+```
+
+### 6. Start the server
 
 ```bash
 composer start
