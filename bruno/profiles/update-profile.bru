@@ -1,0 +1,41 @@
+meta {
+  name: Update Profile
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/api/profiles/{{profileId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Updated Name",
+    "country_code": "DE"
+  }
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJpYXQiOjE3NzgyMDM3MTksImV4cCI6MTc3ODIwNDYxOX0.qutfgpSzN1rml292eNVExF4WRAYcCqXNbxEd15XmyAo
+  profileId: ca3f5e28-196c-4d1a-9ec8-ad8bf511f857
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("has updated name", function() {
+    expect(res.body.name).to.be.a("string");
+  });
+  
+  test("has country_code", function() {
+    expect(res.body).to.have.property("country_code");
+  });
+}

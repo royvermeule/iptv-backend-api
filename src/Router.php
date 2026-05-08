@@ -43,11 +43,11 @@ class Router
             )
         );
         $this->routes->add(
-            name: 'profile_delete',
+            name: 'profile_item',
             route: new Route(
                 path: '/api/profiles/{id}',
                 defaults: ['_controller' => ProfileController::class],
-                methods: ['DELETE']
+                methods: ['PATCH', 'DELETE']
             )
         );
         $this->routes->add(

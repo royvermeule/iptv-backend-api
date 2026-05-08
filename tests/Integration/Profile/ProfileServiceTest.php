@@ -134,4 +134,78 @@ class ProfileServiceTest extends IntegrationTestCase
         $this->expectExceptionCode(404);
         $this->profiles->delete($userB->getId(), $profile->getId());
     }
+
+    public function test_update_changes_name(): void
+    {
+        $user    = $this->createUser();
+        $profile = $this->profiles->create($user->getId(), 'Main', 'NL');
+
+        $updated = $this->profiles->update($user->getId(), $profile->getId(), 'Primary', null);
+
+        $this->assertSame('Primary', $updated->getName());
+        $this->assertSame('NL', $updated->getCountryCode());
+    }
+
+    public function test_update_changes_country_code(): void
+    {
+        $user    = $this->createUser();
+        $profile = $this->profiles->create($user->getId(), 'Main', 'NL');
+
+        $updated = $this->profiles->update($user->getId(), $profile->getId(), null, 'DE');
+
+        $this->assertSame('Main', $updated->getName());
+        $this->assertSame('DE', $updated->getCountryCode());
+    }
+
+    public function test_update_clears_country_code_when_empty_string(): void
+    {
+        $user    = $this->createUser();
+        $profile = $this->profiles->create($user->getId(), 'Main', 'NL');
+
+        $updated = $this->profiles->update($user->getId(), $profile->getId(), null, '');
+
+        $this->assertNull($updated->getCountryCode());
+    }
+
+    public function test_update_throws_409_when_name_conflicts_with_another_profile(): void
+    {
+        $user = $this->createUser();
+        $this->profiles->create($user->getId(), 'Kids', 'NL');
+        $profile = $this->profiles->create($user->getId(), 'Main', 'NL');
+
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionCode(409);
+        $this->profiles->update($user->getId(), $profile->getId(), 'Kids', null);
+    }
+
+    public function test_update_allows_keeping_same_name(): void
+    {
+        $user    = $this->createUser();
+        $profile = $this->profiles->create($user->getId(), 'Main', 'NL');
+
+        $updated = $this->profiles->update($user->getId(), $profile->getId(), 'Main', 'DE');
+
+        $this->assertSame('Main', $updated->getName());
+        $this->assertSame('DE', $updated->getCountryCode());
+    }
+
+    public function test_update_throws_404_for_nonexistent_profile(): void
+    {
+        $user = $this->createUser();
+
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionCode(404);
+        $this->profiles->update($user->getId(), '00000000-0000-0000-0000-000000000000', 'New', null);
+    }
+
+    public function test_update_throws_404_for_profile_belonging_to_another_user(): void
+    {
+        $userA   = $this->createUser('a@example.com');
+        $userB   = $this->createUser('b@example.com');
+        $profile = $this->profiles->create($userA->getId(), 'Main', 'NL');
+
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionCode(404);
+        $this->profiles->update($userB->getId(), $profile->getId(), 'New', null);
+    }
 }

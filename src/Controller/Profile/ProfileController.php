@@ -29,6 +29,7 @@ class ProfileController extends BaseController implements ControllerInterface
         return match ($request->getMethod()) {
             'GET'    => $this->list($request),
             'POST'   => $this->create($request),
+            'PATCH'  => $this->update($request, $params),
             'DELETE' => $this->delete($request, $params),
             default  => $this->json(['error' => 'Method not allowed'], 405),
         };
@@ -70,6 +71,35 @@ class ProfileController extends BaseController implements ControllerInterface
                 'country_code' => $profile->getCountryCode(),
                 'created_at'   => $profile->getCreatedAt()->format(\DateTimeInterface::ATOM),
             ], 201);
+        } catch (\DomainException $e) {
+            return $this->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
+    private function update(ServerRequestInterface $request, array $params): ResponseInterface
+    {
+        $data = json_decode((string) $request->getBody(), true);
+
+        if (!is_array($data)) {
+            return $this->json(['error' => 'Invalid JSON body'], 400);
+        }
+
+        $name        = isset($data['name']) ? (string) $data['name'] : null;
+        $countryCode = array_key_exists('country_code', $data) ? (string) $data['country_code'] : null;
+
+        if ($name !== null && $name === '') {
+            return $this->json(['error' => 'name cannot be empty.'], 400);
+        }
+
+        try {
+            $profile = $this->service->update($this->getUserId($request), $params['id'], $name, $countryCode);
+            return $this->json([
+                'id'              => $profile->getId(),
+                'name'            => $profile->getName(),
+                'country_code'    => $profile->getCountryCode(),
+                'has_credentials' => $profile->hasCredentials(),
+                'created_at'      => $profile->getCreatedAt()->format(\DateTimeInterface::ATOM),
+            ]);
         } catch (\DomainException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
         }

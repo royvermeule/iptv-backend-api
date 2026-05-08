@@ -45,6 +45,36 @@ class ProfileService
         return $profile;
     }
 
+    public function update(string $userId, string $profileId, ?string $name, ?string $countryCode): Profile
+    {
+        $profile = $this->profileRepo->findOneBy([
+            'userId' => $userId,
+            'id'     => $profileId,
+        ]);
+
+        if (!$profile) {
+            throw new \DomainException('Profile could not be found', 404);
+        }
+
+        if ($name !== null) {
+            $existing = $this->list($userId);
+            foreach ($existing as $other) {
+                if ($other->getId() !== $profileId && strtolower($name) === strtolower($other->getName())) {
+                    throw new \DomainException('A profile with this name already exists, for the current user', 409);
+                }
+            }
+            $profile->setName($name);
+        }
+
+        if ($countryCode !== null) {
+            $profile->setCountryCode($countryCode === '' ? null : $countryCode);
+        }
+
+        $this->em->flush();
+
+        return $profile;
+    }
+
     public function delete(string $userId, string $profileId): void
     {
         $profile = $this->profileRepo->findOneBy([

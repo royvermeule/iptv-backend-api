@@ -88,6 +88,16 @@ class Profile
         return $this->createdAt;
     }
 
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function setCountryCode(?string $countryCode): void
+    {
+        $this->countryCode = $countryCode;
+    }
+
     public function setCredentials(string $url, string $username, string $password): void
     {
         $this->xtreamUrl      = $url;
