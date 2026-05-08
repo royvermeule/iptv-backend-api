@@ -14,10 +14,12 @@ class LogoutService
 
     public function logout(string $refreshToken): void
     {
-        $userId = $this->redis->get('refresh_lookup:' . $refreshToken);
-        if ($userId === null) {
+        $stored = $this->redis->get('refresh_lookup:' . $refreshToken);
+        if ($stored === null) {
             throw new \DomainException('Invalid or expired refresh token', 401);
         }
+
+        $userId = str_contains($stored, '|') ? explode('|', $stored, 2)[0] : $stored;
 
         $this->redis->del('refresh_lookup:' . $refreshToken);
         $this->redis->del('refresh:' . $userId);

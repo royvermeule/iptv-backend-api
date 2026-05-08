@@ -13,6 +13,8 @@ use App\Controller\Auth\ResetPasswordController;
 use App\Controller\Auth\VerifyEmailController;
 use App\Controller\Profile\CredentialsController;
 use App\Controller\Profile\ProfileController;
+use App\Controller\Profile\SelectProfileController;
+use App\Middleware\JwtMiddleware;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -38,7 +40,10 @@ class Router
             name: 'profiles',
             route: new Route(
                 path: '/api/profiles',
-                defaults: ['_controller' => ProfileController::class],
+                defaults: [
+                    '_controller' => ProfileController::class,
+                    '_middleware' => [JwtMiddleware::class]
+                ],
                 methods: ['GET', 'POST']
             )
         );
@@ -46,7 +51,10 @@ class Router
             name: 'profile_item',
             route: new Route(
                 path: '/api/profiles/{id}',
-                defaults: ['_controller' => ProfileController::class],
+                defaults: [
+                    '_controller' => ProfileController::class,
+                    '_middleware' => [JwtMiddleware::class]
+                ],
                 methods: ['PATCH', 'DELETE']
             )
         );
@@ -54,7 +62,21 @@ class Router
             name: 'profile_credentials',
             route: new Route(
                 path: '/api/profiles/{id}/credentials',
-                defaults: ['_controller' => CredentialsController::class],
+                defaults: [
+                    '_controller' => CredentialsController::class,
+                    '_middleware' => [JwtMiddleware::class]
+                ],
+                methods: ['POST']
+            )
+        );
+        $this->routes->add(
+            name: 'profile_select',
+            route: new Route(
+                path: '/api/profiles/{id}/select',
+                defaults: [
+                    '_controller' => SelectProfileController::class,
+                    '_middleware' => [JwtMiddleware::class]
+                ],
                 methods: ['POST']
             )
         );
