@@ -1,0 +1,37 @@
+meta {
+  name: Regional Trending
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/regional/trending
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJwcm9maWxlX2lkIjoiMDlmYTlkYTQtNTRmNC00MmY2LWI1NTItNzBlOGRhNmVhOTY0IiwiaWF0IjoxNzc4MjUzODMzLCJleHAiOjE3NzgyNTQ3MzN9.6NAwO7L2fv5cdASkuhyxdvqcwpd8DODhgmBZ43kJ478
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("has region", function() {
+    expect(res.body.region).to.be.a("string");
+  });
+  
+  test("has movies array", function() {
+    expect(res.body.movies).to.be.an("array");
+  });
+  
+  test("has tv array", function() {
+    expect(res.body.tv).to.be.an("array");
+  });
+}

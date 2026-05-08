@@ -16,6 +16,7 @@ use App\Controller\Profile\ProfileController;
 use App\Controller\Profile\SelectProfileController;
 use App\Controller\Favorites\FavoritesController;
 use App\Controller\Progress\WatchProgressController;
+use App\Controller\Trending\TrendingController;
 use App\Controller\Xtream\CredentialsController as XtreamCredentialsController;
 use App\Middleware\JwtMiddleware;
 use App\Middleware\ProfileMiddleware;
@@ -34,6 +35,7 @@ class Router
         $this->sync();
         $this->progress();
         $this->favorites();
+        $this->trending();
     }
 
     public function routes(): RouteCollection
@@ -152,6 +154,21 @@ class Router
                     '_middleware' => [JwtMiddleware::class],
                 ],
                 methods: ['DELETE']
+            )
+        );
+    }
+
+    private function trending(): void
+    {
+        $this->routes->add(
+            name: 'regional_trending',
+            route: new Route(
+                path: '/api/regional/trending',
+                defaults: [
+                    '_controller' => TrendingController::class,
+                    '_middleware' => [JwtMiddleware::class],
+                ],
+                methods: ['GET']
             )
         );
     }
