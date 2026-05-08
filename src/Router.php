@@ -14,6 +14,8 @@ use App\Controller\Auth\VerifyEmailController;
 use App\Controller\Profile\CredentialsController;
 use App\Controller\Profile\ProfileController;
 use App\Controller\Profile\SelectProfileController;
+use App\Controller\Favorites\FavoritesController;
+use App\Controller\Progress\WatchProgressController;
 use App\Controller\Xtream\CredentialsController as XtreamCredentialsController;
 use App\Middleware\JwtMiddleware;
 use App\Middleware\ProfileMiddleware;
@@ -30,6 +32,8 @@ class Router
         $this->auth();
         $this->profiles();
         $this->sync();
+        $this->progress();
+        $this->favorites();
     }
 
     public function routes(): RouteCollection
@@ -96,6 +100,58 @@ class Router
                     '_middleware' => [JwtMiddleware::class, ProfileMiddleware::class],
                 ],
                 methods: ['GET']
+            )
+        );
+    }
+
+    private function progress(): void
+    {
+        $this->routes->add(
+            name: 'progress_list',
+            route: new Route(
+                path: '/api/progress',
+                defaults: [
+                    '_controller' => WatchProgressController::class,
+                    '_middleware' => [JwtMiddleware::class],
+                ],
+                methods: ['GET']
+            )
+        );
+        $this->routes->add(
+            name: 'progress_item',
+            route: new Route(
+                path: '/api/progress/{stream_id}',
+                defaults: [
+                    '_controller' => WatchProgressController::class,
+                    '_middleware' => [JwtMiddleware::class],
+                ],
+                methods: ['GET', 'POST']
+            )
+        );
+    }
+
+    private function favorites(): void
+    {
+        $this->routes->add(
+            name: 'favorites',
+            route: new Route(
+                path: '/api/favorites',
+                defaults: [
+                    '_controller' => FavoritesController::class,
+                    '_middleware' => [JwtMiddleware::class],
+                ],
+                methods: ['GET', 'POST']
+            )
+        );
+        $this->routes->add(
+            name: 'favorites_item',
+            route: new Route(
+                path: '/api/favorites/{stream_id}',
+                defaults: [
+                    '_controller' => FavoritesController::class,
+                    '_middleware' => [JwtMiddleware::class],
+                ],
+                methods: ['DELETE']
             )
         );
     }

@@ -1,0 +1,30 @@
+meta {
+  name: Remove Favorite
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/api/favorites/{{streamId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken:
+  streamId: 12345
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("has message", function() {
+    expect(res.body.message).to.be.a("string");
+  });
+}

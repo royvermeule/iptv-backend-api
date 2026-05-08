@@ -1,0 +1,29 @@
+meta {
+  name: List Favorites
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/favorites
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken:
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns array", function() {
+    expect(res.body).to.be.an("array");
+  });
+}

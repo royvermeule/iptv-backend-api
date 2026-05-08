@@ -1,0 +1,40 @@
+meta {
+  name: Add Favorite
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/favorites
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "stream_id": "12345",
+    "stream_type": "movie"
+  }
+}
+
+vars:pre-request {
+  accessToken:
+}
+
+tests {
+  test("returns 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("has stream_id", function() {
+    expect(res.body.stream_id).to.be.a("string");
+  });
+
+  test("has stream_type", function() {
+    expect(res.body.stream_type).to.be.a("string");
+  });
+}
