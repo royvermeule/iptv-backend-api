@@ -14,7 +14,9 @@ use App\Controller\Auth\VerifyEmailController;
 use App\Controller\Profile\CredentialsController;
 use App\Controller\Profile\ProfileController;
 use App\Controller\Profile\SelectProfileController;
+use App\Controller\Sync\SyncController;
 use App\Middleware\JwtMiddleware;
+use App\Middleware\ProfileMiddleware;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -27,6 +29,7 @@ class Router
         $this->routes = new RouteCollection();
         $this->auth();
         $this->profiles();
+        $this->sync();
     }
 
     public function routes(): RouteCollection
@@ -78,6 +81,21 @@ class Router
                     '_middleware' => [JwtMiddleware::class]
                 ],
                 methods: ['POST']
+            )
+        );
+    }
+
+    private function sync(): void
+    {
+        $this->routes->add(
+            name: 'sync',
+            route: new Route(
+                path: '/api/sync',
+                defaults: [
+                    '_controller' => SyncController::class,
+                    '_middleware' => [JwtMiddleware::class, ProfileMiddleware::class],
+                ],
+                methods: ['GET']
             )
         );
     }

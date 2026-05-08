@@ -9,6 +9,8 @@ use Spiral\RoadRunner\Worker;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+ini_set('memory_limit', '256M');
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 

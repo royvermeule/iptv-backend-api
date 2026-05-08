@@ -1,0 +1,39 @@
+meta {
+  name: Sync IPTV Data
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/sync
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJwcm9maWxlX2lkIjoiMDlmYTlkYTQtNTRmNC00MmY2LWI1NTItNzBlOGRhNmVhOTY0IiwiaWF0IjoxNzc4MjQ3NzU3LCJleHAiOjE3NzgyNDg2NTd9.z4Sz1cXWzLANB-05cmu5WEUFLtU4RzkW4lvqd2GuEAo
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("has live section", function() {
+    expect(res.body).to.have.property("live");
+    expect(res.body.live).to.have.property("categories");
+    expect(res.body.live).to.have.property("streams");
+  });
+  
+  test("has vod section", function() {
+    expect(res.body).to.have.property("vod");
+  });
+  
+  test("has series section", function() {
+    expect(res.body).to.have.property("series");
+  });
+}

@@ -39,4 +39,13 @@ abstract class BaseController
             ->withHeader('Content-Type', 'application/json')
             ->withBody($body);
     }
+
+    protected function rawJson(string $json, int $status = 200): ResponseInterface
+    {
+        $body = $this->factory->createStream($json);
+
+        return $this->factory->createResponse($status)
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody($body);
+    }
 }
