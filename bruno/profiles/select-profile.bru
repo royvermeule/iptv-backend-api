@@ -1,0 +1,34 @@
+meta {
+  name: Select Profile
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/profiles/{{profileId}}/select
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+vars:pre-request {
+  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3N2IyOTk2MC01NDRjLTQxNTUtYTg3MC01NzhkZmFkMjQ2NTQiLCJpYXQiOjE3NzgyMDM3MTksImV4cCI6MTc3ODIwNDYxOX0.qutfgpSzN1rml292eNVExF4WRAYcCqXNbxEd15XmyAo
+  profileId: ca3f5e28-196c-4d1a-9ec8-ad8bf511f857
+}
+
+tests {
+  test("returns 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("has access_token", function() {
+    expect(res.body.access_token).to.be.a("string");
+  });
+
+  test("has refresh_token", function() {
+    expect(res.body.refresh_token).to.be.a("string");
+  });
+}

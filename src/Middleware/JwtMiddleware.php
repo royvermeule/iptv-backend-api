@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use Doctrine\ORM\EntityManager;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Predis\Client;
 use Psr\Http\Message\ServerRequestInterface;
 
-class JwtMiddleware
+class JwtMiddleware implements MiddlewareInterface
 {
+    public function __construct(EntityManager $em, Client $redis) {}
+
     public function process(ServerRequestInterface $request): ServerRequestInterface
     {
         $header = $request->getHeaderLine('Authorization');

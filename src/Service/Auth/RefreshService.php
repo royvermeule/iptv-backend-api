@@ -15,28 +15,38 @@ class RefreshService
 
     public function refresh(string $refreshToken): array
     {
-        $userId = $this->redis->get('refresh_lookup:' . $refreshToken);
-        if ($userId === null) {
+        $stored = $this->redis->get('refresh_lookup:' . $refreshToken);
+        if ($stored === null) {
             throw new \DomainException('Invalid or expired refresh token', 401);
         }
 
-        $oldToken = $refreshToken;
+        [$userId, $profileId] = $this->parseStored($stored);
 
         $newRefreshToken = bin2hex(random_bytes(32));
-        $this->redis->del('refresh_lookup:' . $oldToken);
+        $this->redis->del('refresh_lookup:' . $refreshToken);
 
-        $payload = [
-            'sub' => $userId,
-            'iat' => time(),
-            'exp' => time() + 900,
-        ];
+        $payload = ['sub' => $userId, 'iat' => time(), 'exp' => time() + 900];
+        if ($profileId !== null) {
+            $payload['profile_id'] = $profileId;
+        }
+
         $accessToken = JWT::encode($payload, $_ENV['JWT_SECRET'], 'HS256');
         $this->redis->setex('refresh:' . $userId, 604800, $newRefreshToken);
-        $this->redis->setex('refresh_lookup:' . $newRefreshToken, 604800, $userId);
+        $this->redis->setex('refresh_lookup:' . $newRefreshToken, 604800, $stored);
 
         return [
             'access_token'  => $accessToken,
             'refresh_token' => $newRefreshToken,
         ];
+    }
+
+    private function parseStored(string $stored): array
+    {
+        if (str_contains($stored, '|')) {
+            [$userId, $profileId] = explode('|', $stored, 2);
+            return [$userId, $profileId];
+        }
+
+        return [$stored, null];
     }
 }
