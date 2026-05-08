@@ -3,6 +3,7 @@ composer.phar
 rr.exe
 rr
 .env
+.env.*.local
 .phpunit.result.cache
 
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
