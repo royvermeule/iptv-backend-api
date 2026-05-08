@@ -14,7 +14,7 @@ use App\Controller\Auth\VerifyEmailController;
 use App\Controller\Profile\CredentialsController;
 use App\Controller\Profile\ProfileController;
 use App\Controller\Profile\SelectProfileController;
-use App\Controller\Sync\SyncController;
+use App\Controller\Xtream\CredentialsController as XtreamCredentialsController;
 use App\Middleware\JwtMiddleware;
 use App\Middleware\ProfileMiddleware;
 use Symfony\Component\Routing\Route;
@@ -88,11 +88,11 @@ class Router
     private function sync(): void
     {
         $this->routes->add(
-            name: 'sync',
+            name: 'xtream_credentials',
             route: new Route(
-                path: '/api/sync',
+                path: '/api/credentials',
                 defaults: [
-                    '_controller' => SyncController::class,
+                    '_controller' => XtreamCredentialsController::class,
                     '_middleware' => [JwtMiddleware::class, ProfileMiddleware::class],
                 ],
                 methods: ['GET']
