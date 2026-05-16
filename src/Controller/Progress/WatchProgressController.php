@@ -28,9 +28,10 @@ class WatchProgressController extends BaseController implements ControllerInterf
     {
         if (isset($params['stream_id'])) {
             return match ($request->getMethod()) {
-                'GET'  => $this->getOne($request, $params['stream_id']),
-                'POST' => $this->upsert($request, $params['stream_id']),
-                default => $this->json(['error' => 'Method not allowed'], 405),
+                'GET'    => $this->getOne($request, $params['stream_id']),
+                'POST'   => $this->upsert($request, $params['stream_id']),
+                'DELETE' => $this->delete($request, $params['stream_id']),
+                default  => $this->json(['error' => 'Method not allowed'], 405),
             };
         }
 
@@ -78,6 +79,16 @@ class WatchProgressController extends BaseController implements ControllerInterf
         try {
             $this->service->upsert($this->getProfileId($request), $streamId, $streamType, $timestampSeconds);
             return $this->json(['message' => 'Progress saved.']);
+        } catch (\DomainException $e) {
+            return $this->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
+    private function delete(ServerRequestInterface $request, string $streamId): ResponseInterface
+    {
+        try {
+            $this->service->delete($this->getProfileId($request), $streamId);
+            return $this->json(['message' => 'Progress deleted.']);
         } catch (\DomainException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
         }

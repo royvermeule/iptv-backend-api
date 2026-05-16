@@ -56,4 +56,16 @@ class WatchProgressService
             'streamId'  => $streamId,
         ]);
     }
+
+    public function delete(string $profileId, string $streamId): void
+    {
+        $progress = $this->getOne($profileId, $streamId);
+
+        if (!$progress) {
+            throw new \DomainException('Progress not found', 404);
+        }
+
+        $this->em->remove($progress);
+        $this->em->flush();
+    }
 }

@@ -127,7 +127,7 @@ class Router
                     '_controller' => WatchProgressController::class,
                     '_middleware' => [JwtMiddleware::class],
                 ],
-                methods: ['GET', 'POST']
+                methods: ['GET', 'POST', 'DELETE']
             )
         );
     }
