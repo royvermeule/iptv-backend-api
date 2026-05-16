@@ -94,4 +94,12 @@ class WatchProgressService
         $this->em->remove($progress);
         $this->em->flush();
     }
+
+    public function deleteBySeries(string $profileId, int $seriesId): void
+    {
+        $this->em->getConnection()->executeStatement(
+            'DELETE FROM watch_progress WHERE profile_id = :profile_id AND series_id = :series_id',
+            ['profile_id' => $profileId, 'series_id' => $seriesId]
+        );
+    }
 }

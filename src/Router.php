@@ -120,6 +120,17 @@ class Router
             )
         );
         $this->routes->add(
+            name: 'progress_series',
+            route: new Route(
+                path: '/api/progress/series/{series_id}',
+                defaults: [
+                    '_controller' => WatchProgressController::class,
+                    '_middleware' => [JwtMiddleware::class],
+                ],
+                methods: ['DELETE']
+            )
+        );
+        $this->routes->add(
             name: 'progress_item',
             route: new Route(
                 path: '/api/progress/{stream_id}',

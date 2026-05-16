@@ -26,6 +26,10 @@ class WatchProgressController extends BaseController implements ControllerInterf
 
     public function handle(ServerRequestInterface $request, array $params): ResponseInterface
     {
+        if (isset($params['series_id'])) {
+            return $this->deleteSeries($request, (int) $params['series_id']);
+        }
+
         if (isset($params['stream_id'])) {
             return match ($request->getMethod()) {
                 'GET'    => $this->getOne($request, $params['stream_id']),
@@ -110,6 +114,12 @@ class WatchProgressController extends BaseController implements ControllerInterf
         } catch (\DomainException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
         }
+    }
+
+    private function deleteSeries(ServerRequestInterface $request, int $seriesId): ResponseInterface
+    {
+        $this->service->deleteBySeries($this->getProfileId($request), $seriesId);
+        return $this->json(['message' => 'Series progress deleted.']);
     }
 
     private function format(WatchProgress $p): array
