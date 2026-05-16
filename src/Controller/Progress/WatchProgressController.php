@@ -76,8 +76,26 @@ class WatchProgressController extends BaseController implements ControllerInterf
             return $this->json(['error' => 'timestamp_seconds must be a non-negative integer'], 422);
         }
 
+        $seriesId     = isset($data['series_id'])     ? (int)    $data['series_id']     : null;
+        $seriesTitle  = isset($data['series_title'])  ? (string) $data['series_title']  : null;
+        $season       = isset($data['season'])        ? (int)    $data['season']        : null;
+        $episodeNum   = isset($data['episode_num'])   ? (int)    $data['episode_num']   : null;
+        $episodeTitle = isset($data['episode_title']) ? (string) $data['episode_title'] : null;
+        $cover        = isset($data['cover'])         ? (string) $data['cover']         : null;
+
         try {
-            $this->service->upsert($this->getProfileId($request), $streamId, $streamType, $timestampSeconds);
+            $this->service->upsert(
+                $this->getProfileId($request),
+                $streamId,
+                $streamType,
+                $timestampSeconds,
+                $seriesId,
+                $seriesTitle,
+                $season,
+                $episodeNum,
+                $episodeTitle,
+                $cover,
+            );
             return $this->json(['message' => 'Progress saved.']);
         } catch (\DomainException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
@@ -96,11 +114,24 @@ class WatchProgressController extends BaseController implements ControllerInterf
 
     private function format(WatchProgress $p): array
     {
-        return [
+        $result = [
             'stream_id'         => $p->getStreamId(),
             'stream_type'       => $p->getStreamType(),
             'timestamp_seconds' => $p->getTimestampSeconds(),
             'updated_at'        => $p->getUpdatedAt()->format(\DateTimeInterface::ATOM),
         ];
+
+        if ($p->getStreamType() === 'series_episode' && $p->getSeriesId() !== null) {
+            $result['episode_meta'] = [
+                'series_id'     => $p->getSeriesId(),
+                'series_title'  => $p->getSeriesTitle(),
+                'season'        => $p->getSeason(),
+                'episode_num'   => $p->getEpisodeNum(),
+                'episode_title' => $p->getEpisodeTitle(),
+                'cover'         => $p->getCover(),
+            ];
+        }
+
+        return $result;
     }
 }
