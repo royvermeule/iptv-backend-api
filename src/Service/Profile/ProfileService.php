@@ -12,9 +12,8 @@ class ProfileService
 {
     private readonly EntityRepository $profileRepo;
 
-    public function __construct(
-        private readonly EntityManager $em,
-    ) {
+    public function __construct(private readonly EntityManager $em)
+    {
         $this->profileRepo = $this->em->getRepository(Profile::class);
     }
 
@@ -23,51 +22,71 @@ class ProfileService
      */
     public function list(string $userId): array
     {
-        $profiles = $this->profileRepo->findBy(['userId' => $userId]);
+        $profiles = $this->profileRepo->findBy(["userId" => $userId]);
         return $profiles;
     }
 
-    public function create(string $userId, string $name, ?string $countryCode = null): Profile
-    {
+    public function create(
+        string $userId,
+        string $name,
+        ?string $countryCode = null,
+        ?int $pin = null,
+    ): Profile {
         $existing = $this->list($userId);
         foreach ($existing as $profile) {
             if (strtolower($name) === strtolower($profile->getName())) {
                 throw new \DomainException(
-                    'A profile with this name already exists, for the current user',
-                    409
+                    "A profile with this name already exists, for the current user",
+                    409,
                 );
             }
         }
-        $profile = new Profile($userId, $name, $countryCode);
+        $profile = new Profile($userId, $name, $countryCode, $pin);
         $this->em->persist($profile);
         $this->em->flush();
 
         return $profile;
     }
 
-    public function update(string $userId, string $profileId, ?string $name, ?string $countryCode): Profile
-    {
+    public function update(
+        string $userId,
+        string $profileId,
+        ?string $name,
+        ?string $countryCode,
+        bool $pinProvided = false,
+        ?int $pin = null,
+    ): Profile {
         $profile = $this->profileRepo->findOneBy([
-            'userId' => $userId,
-            'id'     => $profileId,
+            "userId" => $userId,
+            "id" => $profileId,
         ]);
 
         if (!$profile) {
-            throw new \DomainException('Profile could not be found', 404);
+            throw new \DomainException("Profile could not be found", 404);
         }
 
         if ($name !== null) {
             $existing = $this->list($userId);
             foreach ($existing as $other) {
-                if ($other->getId() !== $profileId && strtolower($name) === strtolower($other->getName())) {
-                    throw new \DomainException('A profile with this name already exists, for the current user', 409);
+                if (
+                    $other->getId() !== $profileId &&
+                    strtolower($name) === strtolower($other->getName())
+                ) {
+                    throw new \DomainException(
+                        "A profile with this name already exists, for the current user",
+                        409,
+                    );
                 }
             }
             $profile->setName($name);
         }
 
         if ($countryCode !== null) {
-            $profile->setCountryCode($countryCode === '' ? null : $countryCode);
+            $profile->setCountryCode($countryCode === "" ? null : $countryCode);
+        }
+
+        if ($pinProvided) {
+            $profile->setPin($pin);
         }
 
         $this->em->flush();
@@ -78,12 +97,12 @@ class ProfileService
     public function delete(string $userId, string $profileId): void
     {
         $profile = $this->profileRepo->findOneBy([
-            'userId' => $userId,
-            'id' => $profileId
+            "userId" => $userId,
+            "id" => $profileId,
         ]);
 
         if (!$profile) {
-            throw new \DomainException('Profile could not be found', 404);
+            throw new \DomainException("Profile could not be found", 404);
         }
 
         $this->em->remove($profile);

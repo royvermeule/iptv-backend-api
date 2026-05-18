@@ -25,8 +25,11 @@ class SelectProfileController extends BaseController implements ControllerInterf
 
     public function handle(ServerRequestInterface $request, array $params): ResponseInterface
     {
+        $data = json_decode((string) $request->getBody(), true);
+        $pin = isset($data['pin']) ? (int) $data['pin'] : null;
+
         try {
-            $tokens = $this->service->select($this->getUserId($request), $params['id']);
+            $tokens = $this->service->select($this->getUserId($request), $params['id'], $pin);
             return $this->json($tokens);
         } catch (\DomainException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
